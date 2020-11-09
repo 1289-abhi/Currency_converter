@@ -120,6 +120,11 @@ graph_frame.configure(bg='#FFFAFA')
 Title_label=Label(graph_frame,text='Currency Converter',width=19,anchor=N,padx=100,bg='#FFFAFA',fg='#838383',font=('gabriola',40))
 Title_label.pack()
 
+#To invoke the function on enter key.
+def callback(event):
+    convert()
+window.bind('<Return>', callback)
+
 window.resizable(0,0)#to restrict the user to change the size of the main tkinter window.
 window.mainloop()
 #end of the program.
