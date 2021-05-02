@@ -8,18 +8,21 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from currency_converter import CurrencyConverter
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk)
+from datetime import datetime as date
 
 # 'graph' function consists of inbuilt functions from matplotlib, pandas, requests to form a graph for historical exchange rates of the currency chosen by the user.
 def graph(from_currency,to_currency):
-    url = 'https://api.exchangeratesapi.io/history?start_at=2020-01-01&end_at=2020-05-30&base='+from_currency+'&symbols='+to_currency#url to access the historical rates for desired currency.
-    rates = json.loads(requests.get(url).text)
-    rates_by_date = rates['rates']
+    rates_by_date = dict()
+    for i in range(1,10):
+        rates_by_date[date(2019,3,i).strftime("%Y-%m-%d")] = CurrencyConverter(fallback_on_missing_rate=True).convert(1,from_currency,to_currency,date=date(2019, 3, i))
+
     data = []
+
     for key, value in rates_by_date.items():#loop to arrange the data gathered from url in date/exchange_rate sequence.
-        hist_dict = {'date': key[5:], 'exchange_rate': value[to_currency]}
+        hist_dict = {'date': key, 'exchange_rate': value}
         data.append(hist_dict)
     data.sort(key = lambda x:x['date'])#sorting the data according to the dates.
-    dataframe = DataFrame(data[:100:5])#using pandas to arrange it in data and columns
+    dataframe = DataFrame(data)#using pandas to arrange it in data and columns
     x_axis = dataframe['date']
     y_axis = dataframe['exchange_rate']
     #plotting the graph using matplotlib.
@@ -119,11 +122,6 @@ graph_frame.pack(side=RIGHT)
 graph_frame.configure(bg='#FFFAFA')
 Title_label=Label(graph_frame,text='Currency Converter',width=19,anchor=N,padx=100,bg='#FFFAFA',fg='#838383',font=('gabriola',40))
 Title_label.pack()
-
-#To invoke the function on enter key.
-def callback(event):
-    convert()
-window.bind('<Return>', callback)
 
 window.resizable(0,0)#to restrict the user to change the size of the main tkinter window.
 window.mainloop()
